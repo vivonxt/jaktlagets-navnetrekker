@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Jaktlaget">
-<meta name="description" content="Trekk tilfeldig rekkefølge på jegerne i jaktlaget.">
+<meta name="apple-mobile-web-app-title" content="Lundstulen">
+<meta name="description" content="Posttrekning for Lundstulen jaktlag – trekk tilfeldig hvem som får hvilken post.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="preload" as="image" href="img/elg-1000.jpg" media="(max-width:1000px)">
@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<title>Jaktlagets navnetrekker</title>
+<title>Lundstulen jaktlag – posttrekning</title>
 <style>
 :root{
  --night:#1b1d13;      /* myr i skumring */
@@ -34,10 +34,10 @@ html{background:var(--night)}
 body{margin:0;min-height:100svh;font:400 17px/1.5 var(--body);color:var(--snow);-webkit-font-smoothing:antialiased}
 
 /* Bakgrunnsbilde */
-.bg{position:fixed;inset:0;z-index:-1;background:var(--night) url(img/elg-1000.jpg) 50% 38%/cover no-repeat}
+.bg{position:fixed;inset:0;z-index:-1;background:var(--night) url(img/elg-1000.jpg) 68% 0/auto max(66svh,calc(100vw/1.5)) no-repeat}
 .bg::after{content:"";position:absolute;inset:0;background:
- linear-gradient(180deg,rgba(27,29,19,.55) 0%,rgba(27,29,19,.05) 28%,rgba(27,29,19,.15) 45%,rgba(27,29,19,.92) 72%,var(--night) 100%)}
-@media (min-width:1001px){.bg{left:22vw;background-image:url(img/elg.jpg);background-position:50% 45%}
+ linear-gradient(180deg,rgba(27,29,19,.7) 0%,rgba(27,29,19,.45) 20%,rgba(27,29,19,.05) 34%,rgba(27,29,19,.1) 42%,rgba(27,29,19,.85) 60%,var(--night) 67%)}
+@media (min-width:1001px){.bg{left:22vw;background-image:url(img/elg.jpg);background-position:62% 40%;background-size:cover}
  .bg::after{background:linear-gradient(90deg,var(--night) 0%,rgba(27,29,19,.7) 18%,rgba(27,29,19,.08) 45%,rgba(27,29,19,.2) 100%)}}
 
 .app{min-height:100svh;display:flex;flex-direction:column;max-width:1200px;margin:0 auto;
@@ -49,10 +49,10 @@ header{margin-top:6px}
 h1{font:900 clamp(52px,15vw,104px)/.84 var(--display);margin:0;letter-spacing:-.01em;text-transform:none;
  text-shadow:0 2px 24px rgba(0,0,0,.45)}
 h1 span{display:block;color:var(--birch)}
+.eyebrow{margin:0 0 8px;font:700 14px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--blaze);text-shadow:0 1px 10px rgba(0,0,0,.6)}
 .sub{margin:14px 0 0;max-width:30ch;color:var(--snow);font-weight:500;text-shadow:0 1px 10px rgba(0,0,0,.6)}
 
-main{margin-top:auto;padding-top:34vh;width:100%;max-width:500px}
-@media (min-width:1001px){main{padding-top:48px}}
+main{margin-top:auto;padding-top:28px;width:100%;max-width:500px}
 
 .panel{background:rgba(27,29,19,.72);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);
  border:1px solid rgba(245,237,220,.12);border-radius:22px;padding:20px}
@@ -96,8 +96,6 @@ ol.list li:last-child{animation:fade .35s ease-out}
 @keyframes fade{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
 .status{min-height:1.5em;margin-top:10px;text-align:center;color:var(--birch);font-size:15px}
 
-footer{margin-top:18px;font-size:12px;color:rgba(245,237,220,.45)}
-footer a{color:inherit}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -106,8 +104,9 @@ footer a{color:inherit}
 <div class="bg" aria-hidden="true"></div>
 <div class="app">
 <header>
- <h1>Jaktlagets <span>navnetrekker</span></h1>
- <p class="sub">Trekk tilfeldig rekkefølge på jegerne. Ingen blir trukket to ganger.</p>
+ <p class="eyebrow">Posttrekning</p>
+ <h1>Lundstulen <span>jaktlag</span></h1>
+ <p class="sub">Trekk hvem som skal sitte på hvilken post. Ingen blir trukket to ganger.</p>
 </header>
 
 <main>
@@ -121,7 +120,7 @@ footer a{color:inherit}
 
  <section class="panel hidden" id="drawCard" aria-live="polite">
   <div class="tag" id="tag">
-   <div class="tag-no" id="tagNo">Hvem blir nr. 1?</div>
+   <div class="tag-no" id="tagNo">Hvem får post 1?</div>
    <div class="tag-name" id="drawn">?</div>
   </div>
   <div class="left" id="left"></div>
@@ -138,7 +137,6 @@ footer a{color:inherit}
  </section>
 </main>
 
-<footer>Foto: Robbie Hannawacker, <a href="https://commons.wikimedia.org/wiki/File:A_bull_moose_in_autumn_(b713074a-85f6-476e-adc4-857b0fbcc325).jpg">NPS / public domain</a></footer>
 </div>
 
 <script>
@@ -160,7 +158,7 @@ function start(){
  $('drawBtn').classList.remove('hidden');
  $('drawBtn').disabled=false;
  $('drawBtn').textContent='Start';
- $('tagNo').textContent='Hvem blir nr. 1?';
+ $('tagNo').textContent='Hvem får post 1?';
  $('drawn').textContent='?';
  $('copyStatus').textContent='';
  render();updateLeft();
@@ -172,7 +170,7 @@ function drawNext(){
  const pool=remaining.length?[...remaining,name]:[name];
  const tag=$('tag'),drawn=$('drawn'),btn=$('drawBtn');
  btn.textContent='Trekk neste';
- $('tagNo').textContent='Nr. '+(results.length+1);
+ $('tagNo').textContent='Post '+(results.length+1);
  const land=()=>{
   rolling=false;tag.classList.remove('rolling');drawn.textContent=name;
   tag.classList.remove('landed');void tag.offsetWidth;tag.classList.add('landed');
@@ -193,7 +191,7 @@ function drawNext(){
 function updateLeft(){const n=remaining.length;$('left').textContent=n?n+' igjen i hatten':'Alle er trukket'}
 function render(){$('results').innerHTML=results.map(n=>'<li>'+escapeHtml(n)+'</li>').join('')}
 async function copyResults(){
- const text='Jaktlagets trekning\n\n'+results.map((n,i)=>(i+1)+'. '+n).join('\n');
+ const text='Lundstulen jaktlag – posttrekning\n\n'+results.map((n,i)=>'Post '+(i+1)+': '+n).join('\n');
  try{await navigator.clipboard.writeText(text);$('copyStatus').textContent='Resultatet er kopiert.'}
  catch(e){prompt('Kopier resultatet:',text)}
 }

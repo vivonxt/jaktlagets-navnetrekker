@@ -1,6 +1,6 @@
 {
-  "name":"Jaktlagets navnetrekker",
-  "short_name":"Jaktlaget",
+  "name":"Lundstulen jaktlag – posttrekning",
+  "short_name":"Lundstulen",
   "start_url":"./",
   "display":"standalone",
   "background_color":"#1b1d13",
