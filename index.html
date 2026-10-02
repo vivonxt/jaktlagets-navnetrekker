@@ -3,102 +3,203 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#176b4d">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1b1d13">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Jaktlaget">
+<meta name="description" content="Trekk tilfeldig rekkefølge på jegerne i jaktlaget.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preload" as="image" href="img/elg-1000.jpg" media="(max-width:1000px)">
+<link rel="preload" as="image" href="img/elg.jpg" media="(min-width:1001px)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Jaktlagets navnetrekker</title>
 <style>
-:root{--green:#176b4d;--light:#e8f3e9;--bg:#f7faf7}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:#163229}
-.app{max-width:600px;margin:auto;padding:22px 18px 40px}
-h1{font-size:28px;margin:8px 0 6px}.sub{color:#587066;margin-bottom:22px}
-.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 3px 15px #0000000d;margin-bottom:16px}
-textarea{width:100%;min-height:190px;border:1px solid #ccd9d2;border-radius:12px;padding:13px;font-size:17px;resize:vertical}
-button{width:100%;border:0;border-radius:13px;padding:15px;margin-top:10px;font-size:17px;font-weight:700;background:var(--green);color:#fff}
-button.secondary{background:#fff;color:var(--green);border:1px solid var(--green)}
-button:disabled{opacity:.55}.count,.small{color:#64776f;font-size:14px}.count{margin-top:9px}
-.result{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #e9efeb;font-size:17px}
-.num{width:30px;height:30px;border-radius:50%;background:var(--light);display:grid;place-items:center;color:var(--green);font-weight:700}
-.hidden{display:none}.draw{font-size:34px;font-weight:800;text-align:center;padding:25px 5px;color:var(--green)}
-.small{text-align:center;margin-top:10px}
+:root{
+ --night:#1b1d13;      /* myr i skumring */
+ --moss:#2e3a22;
+ --birch:#e8b43c;      /* bjørkeløv */
+ --lyng:#c2462b;       /* tyttebærlyng */
+ --blaze:#ff6a17;      /* signaloransje */
+ --snow:#f5eddc;
+ --muted:#c9bfa8;
+ --display:'Big Shoulders Display',Impact,'Arial Narrow',sans-serif;
+ --body:'Barlow',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{margin:0;min-height:100svh;font:400 17px/1.5 var(--body);color:var(--snow);-webkit-font-smoothing:antialiased}
+
+/* Bakgrunnsbilde */
+.bg{position:fixed;inset:0;z-index:-1;background:var(--night) url(img/elg-1000.jpg) 50% 38%/cover no-repeat}
+.bg::after{content:"";position:absolute;inset:0;background:
+ linear-gradient(180deg,rgba(27,29,19,.55) 0%,rgba(27,29,19,.05) 28%,rgba(27,29,19,.15) 45%,rgba(27,29,19,.92) 72%,var(--night) 100%)}
+@media (min-width:1001px){.bg{left:22vw;background-image:url(img/elg.jpg);background-position:50% 45%}
+ .bg::after{background:linear-gradient(90deg,var(--night) 0%,rgba(27,29,19,.7) 18%,rgba(27,29,19,.08) 45%,rgba(27,29,19,.2) 100%)}}
+
+.app{min-height:100svh;display:flex;flex-direction:column;max-width:1200px;margin:0 auto;
+ padding:max(20px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom))}
+@media (min-width:700px){.app{padding-left:40px;padding-right:40px}}
+
+/* Tittel */
+header{margin-top:6px}
+h1{font:900 clamp(52px,15vw,104px)/.84 var(--display);margin:0;letter-spacing:-.01em;text-transform:none;
+ text-shadow:0 2px 24px rgba(0,0,0,.45)}
+h1 span{display:block;color:var(--birch)}
+.sub{margin:14px 0 0;max-width:30ch;color:var(--snow);font-weight:500;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+
+main{margin-top:auto;padding-top:34vh;width:100%;max-width:500px}
+@media (min-width:1001px){main{padding-top:48px}}
+
+.panel{background:rgba(27,29,19,.72);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);
+ border:1px solid rgba(245,237,220,.12);border-radius:22px;padding:20px}
+.panel h2{font:700 30px/1 var(--display);margin:0 0 4px;letter-spacing:.01em}
+.hint{margin:0 0 12px;color:var(--muted);font-size:15px}
+.hidden{display:none!important}
+
+textarea{display:block;width:100%;min-height:200px;resize:vertical;border-radius:14px;padding:12px 14px;
+ font:500 18px/1.6 var(--body);color:var(--snow);background:rgba(0,0,0,.28);border:1px solid rgba(245,237,220,.18)}
+textarea::placeholder{color:rgba(245,237,220,.35)}
+textarea:focus{outline:2px solid var(--birch);outline-offset:2px;border-color:transparent}
+.count{margin:10px 2px 0;color:var(--muted);font-size:15px}
+.count b{color:var(--snow);font-weight:700}
+
+button{display:block;width:100%;margin-top:12px;padding:16px 18px;border-radius:14px;border:0;cursor:pointer;
+ font:700 18px/1 var(--body);color:var(--night);background:var(--blaze);transition:transform .08s,filter .15s}
+button:hover{filter:brightness(1.07)}
+button:active{transform:scale(.985)}
+button:focus-visible{outline:3px solid var(--birch);outline-offset:3px}
+button:disabled{opacity:.45;cursor:default;transform:none;filter:none}
+button.ghost{background:transparent;color:var(--snow);border:1.5px solid rgba(245,237,220,.35)}
+.row{display:flex;gap:10px}.row button{flex:1}
+
+/* Trekning: post-skiltet */
+.tag{position:relative;margin:6px 0 4px;padding:30px 18px 26px;text-align:center;color:var(--night);background:var(--blaze);
+ clip-path:polygon(18px 0,calc(100% - 18px) 0,100% 18px,100% calc(100% - 18px),calc(100% - 18px) 100%,18px 100%,0 calc(100% - 18px),0 18px);
+ box-shadow:inset 0 0 0 3px rgba(27,29,19,.18)}
+.tag::before{content:"";position:absolute;top:12px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--night);opacity:.85}
+.tag-no{font:700 15px/1 var(--body);letter-spacing:.04em;opacity:.75;margin-top:6px}
+.tag-name{font:900 clamp(40px,13vw,68px)/1 var(--display);margin-top:10px;min-height:1em;overflow-wrap:anywhere}
+.tag.rolling .tag-name{filter:blur(.6px);opacity:.8}
+.tag.landed{animation:land .42s cubic-bezier(.2,1.6,.4,1)}
+@keyframes land{0%{transform:scale(.94) rotate(-1.5deg)}100%{transform:none}}
+.left{text-align:center;color:var(--muted);font-size:15px;margin-top:10px}
+
+/* Liste */
+ol.list{list-style:none;margin:16px 0 0;padding:0;counter-reset:n}
+ol.list li{counter-increment:n;display:flex;align-items:baseline;gap:14px;padding:9px 2px;border-top:1px solid rgba(245,237,220,.1);font-size:18px;font-weight:600}
+ol.list li::before{content:counter(n);flex:0 0 2ch;text-align:right;font:900 24px/1 var(--display);color:var(--birch)}
+ol.list li:last-child{animation:fade .35s ease-out}
+@keyframes fade{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.status{min-height:1.5em;margin-top:10px;text-align:center;color:var(--birch);font-size:15px}
+
+footer{margin-top:18px;font-size:12px;color:rgba(245,237,220,.45)}
+footer a{color:inherit}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"></div>
 <div class="app">
-<h1>🦌 Jaktlagets navnetrekker</h1>
-<div class="sub">Trekk tilfeldig rekkefølge på jegerne – uten gjentakelser.</div>
+<header>
+ <h1>Jaktlagets <span>navnetrekker</span></h1>
+ <p class="sub">Trekk tilfeldig rekkefølge på jegerne. Ingen blir trukket to ganger.</p>
+</header>
 
-<div class="card" id="inputCard">
-<h2>Jegere</h2>
-<p>Én jeger per linje.</p>
-<textarea id="names" placeholder="Ola Nordmann
-Per Hansen
-Kari Olsen"></textarea>
-<div class="count" id="count">0 jegere</div>
-<button onclick="start()">Start trekning</button>
-</div>
+<main>
+ <section class="panel" id="inputCard">
+  <h2>Hvem er med i dag?</h2>
+  <p class="hint">Skriv én jeger per linje. Navnene huskes til neste gang.</p>
+  <textarea id="names" aria-label="Jegere, én per linje" spellcheck="false" autocomplete="off" placeholder="Ola Nordmann&#10;Per Hansen&#10;Kari Olsen"></textarea>
+  <div class="count" id="count"></div>
+  <button onclick="start()">Start trekning</button>
+ </section>
 
-<div class="card hidden" id="drawCard">
-<div class="small" id="left"></div>
-<div class="draw" id="drawn">Klar?</div>
-<button onclick="drawNext()" id="drawBtn">Trekk neste</button>
-<button class="secondary" onclick="resetAll()">Start på nytt</button>
-</div>
+ <section class="panel hidden" id="drawCard" aria-live="polite">
+  <div class="tag" id="tag">
+   <div class="tag-no" id="tagNo">Klar til trekning</div>
+   <div class="tag-name" id="drawn">?</div>
+  </div>
+  <div class="left" id="left"></div>
+  <button onclick="drawNext()" id="drawBtn">Trekk neste</button>
+  <ol class="list" id="results"></ol>
+  <div id="doneBox" class="hidden">
+   <button onclick="copyResults()">Kopier resultat</button>
+   <div class="status" id="copyStatus"></div>
+  </div>
+  <div class="row">
+   <button class="ghost" onclick="start()" id="againBtn">Trekk på nytt</button>
+   <button class="ghost" onclick="resetAll()">Endre navn</button>
+  </div>
+ </section>
+</main>
 
-<div class="card hidden" id="resultCard">
-<h2>Resultat</h2>
-<div id="results"></div>
-<button onclick="copyResults()">📋 Kopier resultat</button>
-<button class="secondary" onclick="resetAll()">Ny trekning</button>
-<div class="small" id="copyStatus"></div>
-</div>
+<footer>Foto: Robbie Hannawacker, <a href="https://commons.wikimedia.org/wiki/File:A_bull_moose_in_autumn_(b713074a-85f6-476e-adc4-857b0fbcc325).jpg">NPS / public domain</a></footer>
 </div>
 
 <script>
-let remaining=[],results=[];
-const namesEl=document.getElementById('names');
-namesEl.addEventListener('input',updateCount);
-function getNames(){return namesEl.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
-function updateCount(){let n=new Set(getNames()).size;document.getElementById('count').textContent=n+' jeger'+(n===1?'':'e')}
+let remaining=[],results=[],rolling=false;
+const $=id=>document.getElementById(id);
+const namesEl=$('names');
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+try{namesEl.value=localStorage.getItem('jegere')||''}catch(e){}
+namesEl.addEventListener('input',()=>{updateCount();try{localStorage.setItem('jegere',namesEl.value)}catch(e){}});
+function getNames(){return [...new Set(namesEl.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))]}
+function updateCount(){let n=getNames().length;$('count').innerHTML=n?'<b>'+n+'</b> jeger'+(n===1?'':'e')+' klar'+(n===1?'':'e'):'Ingen jegere ennå'}
+function rand(n){return crypto.getRandomValues(new Uint32Array(1))[0]%n}
 function start(){
- remaining=[...new Set(getNames())];results=[];
- if(!remaining.length){alert('Skriv inn minst ett navn.');return}
- document.getElementById('inputCard').classList.add('hidden');
- document.getElementById('drawCard').classList.remove('hidden');
- document.getElementById('resultCard').classList.add('hidden');
- updateDraw();
+ remaining=getNames();results=[];
+ if(!remaining.length){namesEl.focus();$('count').textContent='Skriv inn minst ett navn for å starte.';return}
+ $('inputCard').classList.add('hidden');
+ $('drawCard').classList.remove('hidden');
+ $('doneBox').classList.add('hidden');
+ $('drawBtn').classList.remove('hidden');
+ $('drawBtn').disabled=false;
+ $('tagNo').textContent='Klar til trekning';
+ $('drawn').textContent='?';
+ $('copyStatus').textContent='';
+ render();updateLeft();
+ window.scrollTo({top:document.body.scrollHeight,behavior:reduceMotion?'auto':'smooth'});
 }
 function drawNext(){
- if(!remaining.length)return;
- const i=crypto.getRandomValues(new Uint32Array(1))[0]%remaining.length;
- const name=remaining.splice(i,1)[0];
- results.push(name);
- document.getElementById('drawn').textContent=name;
- updateDraw();render();
- if(!remaining.length){
-   document.getElementById('drawBtn').disabled=true;
-   document.getElementById('drawBtn').textContent='Alle er trukket';
-   document.getElementById('resultCard').classList.remove('hidden');
- }
+ if(!remaining.length||rolling)return;
+ const name=remaining.splice(rand(remaining.length),1)[0];
+ const pool=remaining.length?[...remaining,name]:[name];
+ const tag=$('tag'),drawn=$('drawn'),btn=$('drawBtn');
+ $('tagNo').textContent='Nr. '+(results.length+1);
+ const land=()=>{
+  rolling=false;tag.classList.remove('rolling');drawn.textContent=name;
+  tag.classList.remove('landed');void tag.offsetWidth;tag.classList.add('landed');
+  if(navigator.vibrate)navigator.vibrate(40);
+  results.push(name);render();updateLeft();
+  if(!remaining.length){btn.classList.add('hidden');$('doneBox').classList.remove('hidden')}
+  else btn.disabled=false;
+ };
+ if(reduceMotion||pool.length<2){land();return}
+ rolling=true;btn.disabled=true;tag.classList.add('rolling');
+ let t=0,delay=45;
+ (function spin(){
+  drawn.textContent=pool[t++%pool.length];
+  delay*=1.13;
+  if(delay>260)setTimeout(land,delay);else setTimeout(spin,delay);
+ })();
 }
-function updateDraw(){document.getElementById('left').textContent=remaining.length+' igjen'}
-function render(){document.getElementById('results').innerHTML=results.map((n,i)=>`<div class="result"><span class="num">${i+1}</span><span>${escapeHtml(n)}</span></div>`).join('')}
+function updateLeft(){const n=remaining.length;$('left').textContent=n?n+' igjen i hatten':'Alle er trukket'}
+function render(){$('results').innerHTML=results.map(n=>'<li>'+escapeHtml(n)+'</li>').join('')}
 async function copyResults(){
- const text='Jaktlagets trekkeresultat\n\n'+results.map((n,i)=>(i+1)+'. '+n).join('\n');
- try{await navigator.clipboard.writeText(text);document.getElementById('copyStatus').textContent='Resultatet er kopiert!'}
+ const text='Jaktlagets trekning\n\n'+results.map((n,i)=>(i+1)+'. '+n).join('\n');
+ try{await navigator.clipboard.writeText(text);$('copyStatus').textContent='Resultatet er kopiert.'}
  catch(e){prompt('Kopier resultatet:',text)}
 }
 function resetAll(){
  remaining=[];results=[];
- document.getElementById('inputCard').classList.remove('hidden');
- document.getElementById('drawCard').classList.add('hidden');
- document.getElementById('resultCard').classList.add('hidden');
- document.getElementById('drawBtn').disabled=false;
- document.getElementById('drawBtn').textContent='Trekk neste';
- document.getElementById('drawn').textContent='Klar?';
+ $('drawCard').classList.add('hidden');
+ $('inputCard').classList.remove('hidden');
+ namesEl.focus();
 }
 function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 updateCount();
