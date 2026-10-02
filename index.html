@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#176b4d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Jaktlaget">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<title>Jaktlagets navnetrekker</title>
+<style>
+:root{--green:#176b4d;--light:#e8f3e9;--bg:#f7faf7}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:#163229}
+.app{max-width:600px;margin:auto;padding:22px 18px 40px}
+h1{font-size:28px;margin:8px 0 6px}.sub{color:#587066;margin-bottom:22px}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 3px 15px #0000000d;margin-bottom:16px}
+textarea{width:100%;min-height:190px;border:1px solid #ccd9d2;border-radius:12px;padding:13px;font-size:17px;resize:vertical}
+button{width:100%;border:0;border-radius:13px;padding:15px;margin-top:10px;font-size:17px;font-weight:700;background:var(--green);color:#fff}
+button.secondary{background:#fff;color:var(--green);border:1px solid var(--green)}
+button:disabled{opacity:.55}.count,.small{color:#64776f;font-size:14px}.count{margin-top:9px}
+.result{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #e9efeb;font-size:17px}
+.num{width:30px;height:30px;border-radius:50%;background:var(--light);display:grid;place-items:center;color:var(--green);font-weight:700}
+.hidden{display:none}.draw{font-size:34px;font-weight:800;text-align:center;padding:25px 5px;color:var(--green)}
+.small{text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>🦌 Jaktlagets navnetrekker</h1>
+<div class="sub">Trekk tilfeldig rekkefølge på jegerne – uten gjentakelser.</div>
+
+<div class="card" id="inputCard">
+<h2>Jegere</h2>
+<p>Én jeger per linje.</p>
+<textarea id="names" placeholder="Ola Nordmann
+Per Hansen
+Kari Olsen"></textarea>
+<div class="count" id="count">0 jegere</div>
+<button onclick="start()">Start trekning</button>
+</div>
+
+<div class="card hidden" id="drawCard">
+<div class="small" id="left"></div>
+<div class="draw" id="drawn">Klar?</div>
+<button onclick="drawNext()" id="drawBtn">Trekk neste</button>
+<button class="secondary" onclick="resetAll()">Start på nytt</button>
+</div>
+
+<div class="card hidden" id="resultCard">
+<h2>Resultat</h2>
+<div id="results"></div>
+<button onclick="copyResults()">📋 Kopier resultat</button>
+<button class="secondary" onclick="resetAll()">Ny trekning</button>
+<div class="small" id="copyStatus"></div>
+</div>
+</div>
+
+<script>
+let remaining=[],results=[];
+const namesEl=document.getElementById('names');
+namesEl.addEventListener('input',updateCount);
+function getNames(){return namesEl.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
+function updateCount(){let n=new Set(getNames()).size;document.getElementById('count').textContent=n+' jeger'+(n===1?'':'e')}
+function start(){
+ remaining=[...new Set(getNames())];results=[];
+ if(!remaining.length){alert('Skriv inn minst ett navn.');return}
+ document.getElementById('inputCard').classList.add('hidden');
+ document.getElementById('drawCard').classList.remove('hidden');
+ document.getElementById('resultCard').classList.add('hidden');
+ updateDraw();
+}
+function drawNext(){
+ if(!remaining.length)return;
+ const i=crypto.getRandomValues(new Uint32Array(1))[0]%remaining.length;
+ const name=remaining.splice(i,1)[0];
+ results.push(name);
+ document.getElementById('drawn').textContent=name;
+ updateDraw();render();
+ if(!remaining.length){
+   document.getElementById('drawBtn').disabled=true;
+   document.getElementById('drawBtn').textContent='Alle er trukket';
+   document.getElementById('resultCard').classList.remove('hidden');
+ }
+}
+function updateDraw(){document.getElementById('left').textContent=remaining.length+' igjen'}
+function render(){document.getElementById('results').innerHTML=results.map((n,i)=>`<div class="result"><span class="num">${i+1}</span><span>${escapeHtml(n)}</span></div>`).join('')}
+async function copyResults(){
+ const text='Jaktlagets trekkeresultat\n\n'+results.map((n,i)=>(i+1)+'. '+n).join('\n');
+ try{await navigator.clipboard.writeText(text);document.getElementById('copyStatus').textContent='Resultatet er kopiert!'}
+ catch(e){prompt('Kopier resultatet:',text)}
+}
+function resetAll(){
+ remaining=[];results=[];
+ document.getElementById('inputCard').classList.remove('hidden');
+ document.getElementById('drawCard').classList.add('hidden');
+ document.getElementById('resultCard').classList.add('hidden');
+ document.getElementById('drawBtn').disabled=false;
+ document.getElementById('drawBtn').textContent='Trekk neste';
+ document.getElementById('drawn').textContent='Klar?';
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+updateCount();
+</script>
+</body>
+</html>
