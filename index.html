@@ -116,16 +116,16 @@ footer a{color:inherit}
   <p class="hint">Skriv én jeger per linje. Navnene huskes til neste gang.</p>
   <textarea id="names" aria-label="Jegere, én per linje" spellcheck="false" autocomplete="off" placeholder="Ola Nordmann&#10;Per Hansen&#10;Kari Olsen"></textarea>
   <div class="count" id="count"></div>
-  <button onclick="start()">Start trekning</button>
+  <button onclick="start()">Klar til trekning</button>
  </section>
 
  <section class="panel hidden" id="drawCard" aria-live="polite">
   <div class="tag" id="tag">
-   <div class="tag-no" id="tagNo">Klar til trekning</div>
+   <div class="tag-no" id="tagNo">Hvem blir nr. 1?</div>
    <div class="tag-name" id="drawn">?</div>
   </div>
   <div class="left" id="left"></div>
-  <button onclick="drawNext()" id="drawBtn">Trekk neste</button>
+  <button onclick="drawNext()" id="drawBtn">Start</button>
   <ol class="list" id="results"></ol>
   <div id="doneBox" class="hidden">
    <button onclick="copyResults()">Kopier resultat</button>
@@ -159,7 +159,8 @@ function start(){
  $('doneBox').classList.add('hidden');
  $('drawBtn').classList.remove('hidden');
  $('drawBtn').disabled=false;
- $('tagNo').textContent='Klar til trekning';
+ $('drawBtn').textContent='Start';
+ $('tagNo').textContent='Hvem blir nr. 1?';
  $('drawn').textContent='?';
  $('copyStatus').textContent='';
  render();updateLeft();
@@ -170,6 +171,7 @@ function drawNext(){
  const name=remaining.splice(rand(remaining.length),1)[0];
  const pool=remaining.length?[...remaining,name]:[name];
  const tag=$('tag'),drawn=$('drawn'),btn=$('drawBtn');
+ btn.textContent='Trekk neste';
  $('tagNo').textContent='Nr. '+(results.length+1);
  const land=()=>{
   rolling=false;tag.classList.remove('rolling');drawn.textContent=name;
